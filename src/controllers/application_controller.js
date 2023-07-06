@@ -14,10 +14,10 @@ const getAllApplications = (req, res) => {
     })
 }
 
-const getAppById = (req, res) => {
+const getApplicationById = (req, res) => {
     const { id } = req.params;
 
-    pool.query(queries.getAppById, [id], (error, result) => {
+    pool.query(queries.getApplicationById, [id], (error, result) => {
         if (error) throw error;
 
         res.status(200).json({success: true, data: result.rows})
@@ -26,7 +26,6 @@ const getAppById = (req, res) => {
 
 const addApplication = (req, res) => {
     const body = req.body;
-    console.log(body)
 
     pool.query(
         queries.getAppByCompanyNameAndPosition, 
@@ -36,9 +35,7 @@ const addApplication = (req, res) => {
 
         const ApplicationExists = results.rows.length
 
-        if (ApplicationExists){
-            return res.status(404).json({success: false, message: "This user already exists"})
-        }
+        if (ApplicationExists) return res.status(404).json({success: false, message: "This user already exists"})
 
         //add application
         pool.query(queries.addApplication, 
@@ -69,8 +66,48 @@ const addApplication = (req, res) => {
     })
 }
 
+const updateApplication = (req, res) => {
+    const { id } = req.params
+    const body = req.body;
+
+    pool.query(queries.getApplicationById, [id], (error, results) => {
+        if (error) throw error;
+
+        const noApplicationExist = !results.rows.length
+
+        if (noApplicationExist) return res.status(404).json({success: false, message: "This user is not available"})
+        
+        pool.query(queries.updateApplication, 
+            [
+                body.site,
+                body.date,
+                body.date_applied_to,
+                body.company_name,
+                body.position,
+                body.fulltime_contract,
+                body.salary,
+                body.company_website,
+                body.contact_info,
+                body.call_back_date,
+                body.tech_stack,
+                body.round_1,
+                body.round_2,
+                body.round_3,
+                body.final,
+                body.notes,
+                id
+            ],
+            (error, result) => {
+                if (error) throw error;
+
+                res.status(201).json({success: true, message: "Application successfully updated"})
+            })
+    })
+}
+
 module.exports = {
     getAllApplications, 
-    getAppById,
-    addApplication
+    getApplicationById,
+    addApplication,
+    updateApplication
 }

@@ -1,6 +1,6 @@
 const getAllApplications = "SELECT * FROM application";
 
-const getAppById = "SELECT * FROM application WHERE ID = $1";
+const getApplicationById = "SELECT * FROM application WHERE ID = $1";
 
 const getAppByCompanyNameAndPosition =
      "SELECT * FROM application " +
@@ -44,9 +44,32 @@ const getAppByCompanyNameAndPosition =
     "$16" +
     ")";
 
+const updateApplication = "UPDATE application " +
+    "SET " +
+    "site = $1, " +
+    "date = $2, " +
+    "date_applied_to = $3, " +
+    "company_name = $4, " +
+    "position = $5, " +
+    "fulltime_contract = $6, " +
+    "salary = $7, " +
+    "company_website = $8, " +
+    "contact_info = $9, " +
+    "call_back_date = $10, " +
+    "tech_stack = $11, " +
+    "round_1 = $12, " +
+    "round_2 = $13, " +
+    "round_3 = $14, " +
+    "final = $15, " +
+    "notes = $16 " +
+    "WHERE " +
+    "id = $17;";
+
+
 module.exports = {
     getAllApplications,
-    getAppById,
+    getApplicationById,
     getAppByCompanyNameAndPosition,
-    addApplication
+    addApplication,
+    updateApplication
 }
