@@ -6,6 +6,6 @@ routes.get('/', controller.getAllApplications)
 routes.get('/:id', controller.getApplicationById)
 routes.post('/', controller.addApplication)
 routes.put('/:id', controller.updateApplication)
-
+routes.delete('/:id', controller.deleteApplicationById)
 
 module.exports = routes;

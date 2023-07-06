@@ -65,11 +65,13 @@ const updateApplication = "UPDATE application " +
     "WHERE " +
     "id = $17;";
 
+const deleteApplicationById = "DELETE FROM application WHERE id = $1";
 
 module.exports = {
     getAllApplications,
     getApplicationById,
     getAppByCompanyNameAndPosition,
     addApplication,
-    updateApplication
+    updateApplication,
+    deleteApplicationById
 }

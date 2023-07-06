@@ -20,7 +20,13 @@ const getApplicationById = (req, res) => {
     pool.query(queries.getApplicationById, [id], (error, result) => {
         if (error) throw error;
 
-        res.status(200).json({success: true, data: result.rows})
+        res.status(200)
+        .json(
+            {
+                success: true,
+                data: result.rows
+            }
+        )
     })
 }
 
@@ -60,7 +66,13 @@ const addApplication = (req, res) => {
             (error, results) => {
                 if (error) throw error
 
-                res.status(201).json({success: true, message: "Application successfully created"})
+                res.status(201)
+                .json(
+                    {
+                        success: true,
+                        message: "Application successfully created"
+                    }
+                )
             }
         )
     })
@@ -100,8 +112,39 @@ const updateApplication = (req, res) => {
             (error, result) => {
                 if (error) throw error;
 
-                res.status(201).json({success: true, message: "Application successfully updated"})
-            })
+                res.status(201)
+                .json(
+                    {
+                        success: true,
+                        message: "Application successfully updated"
+                    }
+                )
+            }
+        )
+    })
+}
+
+const deleteApplicationById = (req, res) => {
+    const { id } = req.params
+
+    pool.query(queries.getApplicationById, [id], (error, results) => {
+        if (error) throw error;
+
+        const noApplicationExist = !results.rows.length
+
+        if (noApplicationExist) return res.status(404).json({success: false, message: "This user is not available"})
+
+        pool.query(queries.deleteApplicationById, [id], (error, results) => {
+            if (error) throw error;
+
+            res.status(200)
+            .json(
+                {
+                    success: true,
+                    message: "Application successfully deleted"
+                }
+            )
+        })
     })
 }
 
@@ -109,5 +152,6 @@ module.exports = {
     getAllApplications, 
     getApplicationById,
     addApplication,
-    updateApplication
+    updateApplication,
+    deleteApplicationById
 }
