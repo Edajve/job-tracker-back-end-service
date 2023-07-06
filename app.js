@@ -8,8 +8,10 @@ app.use(express.json())
 
 app.use('/api/v1/applications', applicationRoutes)
 
-app.get('/', (req, res) => {
-    res.end('Root Endpoint hit')
+app.get('/', (req, res) => res.end('Root Endpoint hit'))
+
+app.get('*' ,(req, res) => {
+    res.end('This resource is not available')
 })
 
 app.listen(PORT, () => console.log(`listening on port ${PORT}..`))
