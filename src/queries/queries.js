@@ -65,7 +65,15 @@ const updateApplication = "UPDATE application " +
     "WHERE " +
     "id = $17;";
 
-const deleteApplicationById = "DELETE FROM application WHERE id = $1";
+const deleteApplicationById = "DELETE FROM application WHERE id = $1 ";
+
+const updateApplicationColumnByID  = (dynamicColumn) => {
+    return "UPDATE application SET " + dynamicColumn + " = $1 WHERE id = $2 "
+}
+
+const doesColumnExists =
+"SELECT EXISTS (SELECT 1 FROM information_schema.columns " +
+ "WHERE table_name = 'application' AND column_name = $1) AS column_exists";
 
 module.exports = {
     getAllApplications,
@@ -73,5 +81,7 @@ module.exports = {
     getAppByCompanyNameAndPosition,
     addApplication,
     updateApplication,
-    deleteApplicationById
+    deleteApplicationById,
+    updateApplicationColumnByID,
+    doesColumnExists
 }

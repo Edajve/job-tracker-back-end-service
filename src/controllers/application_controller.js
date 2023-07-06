@@ -148,10 +148,44 @@ const deleteApplicationById = (req, res) => {
     })
 }
 
+const updateApplicationColumnByID = (req, res) => {
+    const { column, id } = req.params;
+    const { updatedColumn } = req.body;
+
+
+    //check to see if the id exits
+    pool.query(queries.getApplicationById, [id], (error, results) => {
+        if (error) throw error;
+
+        const noApplicationExist = !results.rows.length
+
+        if (noApplicationExist) return res.status(404).json({success: false, message: "This user is not available"});
+
+        //check to see if the column exists
+        pool.query(queries.doesColumnExists, [column], (error, results) => {
+            if (error) throw error;
+
+            const doesColumnExits = results.rows[0].column_exists
+
+            if (!doesColumnExits) {
+                return res.status(404).json({success: false, message: "This column is not available"})
+            }
+
+            // run update query
+            pool.query(queries.updateApplicationColumnByID(column), [updatedColumn, id], (error, results) => {
+                if (error) throw error;
+
+                return res.status(200).json({success: true, message: "Application column updated"})
+            })
+        })
+    })
+}
+
 module.exports = {
     getAllApplications, 
     getApplicationById,
     addApplication,
     updateApplication,
-    deleteApplicationById
+    deleteApplicationById,
+    updateApplicationColumnByID
 }

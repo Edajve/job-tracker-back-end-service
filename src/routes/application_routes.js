@@ -5,6 +5,7 @@ const controller = require('../controllers/application_controller')
 routes.get('/', controller.getAllApplications)
 routes.get('/:id', controller.getApplicationById)
 routes.post('/', controller.addApplication)
+routes.put('/:column/:id', controller.updateApplicationColumnByID)
 routes.put('/:id', controller.updateApplication)
 routes.delete('/:id', controller.deleteApplicationById)
 
