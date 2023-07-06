@@ -4,6 +4,7 @@ const app = express()
 const PORT = 5000;
 
 //grab json middle ware
+app.use(express.json())
 
 app.use('/api/v1/applications', applicationRoutes)
 

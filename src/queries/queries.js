@@ -1,4 +1,4 @@
-const getAllApplications = "";
+const getAllApplications = "SELECT * FROM application";
 
 module.exports = {
     getAllApplications
