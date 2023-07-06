@@ -181,11 +181,21 @@ const updateApplicationColumnByID = (req, res) => {
     })
 }
 
+const getApplicationsByCompanyName = (req, res) => {
+    const { company_name } = req.query;
+
+    pool.query(queries.getApplicationsByCompanyName, [company_name], (error, results) => {
+        if (error) throw error;
+        return res.status(200).json({success: true, data: results.rows})
+    })
+}
+
 module.exports = {
     getAllApplications, 
     getApplicationById,
     addApplication,
     updateApplication,
     deleteApplicationById,
-    updateApplicationColumnByID
+    updateApplicationColumnByID,
+    getApplicationsByCompanyName
 }

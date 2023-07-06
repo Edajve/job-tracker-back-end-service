@@ -75,6 +75,8 @@ const doesColumnExists =
 "SELECT EXISTS (SELECT 1 FROM information_schema.columns " +
  "WHERE table_name = 'application' AND column_name = $1) AS column_exists";
 
+ const getApplicationsByCompanyName = "SELECT * FROM application WHERE company_name = $1 ";
+
 module.exports = {
     getAllApplications,
     getApplicationById,
@@ -83,5 +85,6 @@ module.exports = {
     updateApplication,
     deleteApplicationById,
     updateApplicationColumnByID,
-    doesColumnExists
+    doesColumnExists,
+    getApplicationsByCompanyName
 }
