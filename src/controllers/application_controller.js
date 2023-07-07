@@ -182,12 +182,47 @@ const updateApplicationColumnByID = (req, res) => {
 }
 
 const getApplicationsByCompanyName = (req, res) => {
-    const { company_name } = req.query;
-
+    const { company_name, site } = req.query;
     pool.query(queries.getApplicationsByCompanyName, [company_name], (error, results) => {
         if (error) throw error;
         return res.status(200).json({success: true, data: results.rows})
     })
+}
+
+const determineQuery = (column, search) => {
+    const paramsToRun = []
+    if (search === "" || search === undefined) {
+        if (!column) throw new Error("No query parameter given")
+        paramsToRun.push(column);
+    } else {
+        paramsToRun.push(search);
+        if (!column) throw new Error("No query parameter given here");
+        paramsToRun.push(column);
+    }
+    return paramsToRun;
+}   
+
+
+const getApplicationsBySpecificQuery = (req, res) => {
+    const { column, companyName } = req.query;
+    const queryToRun = determineQuery(column, companyName)
+   
+    switch(queryToRun.length){
+        case 1:
+            pool.query('SELECT * FROM application ORDER BY ' + queryToRun[0] + ' ASC', (error, results) => {
+                if (error) throw error;
+                res.status(200).json({success: true, data: results.rows})
+            })
+        break;
+        case 2:
+            pool.query('SELECT * FROM application WHERE company_name = \'' + queryToRun[0] + '\' ORDER BY ' + queryToRun[1] + ' ASC', (error, results) => {
+                if (error) throw error;
+                res.status(200).json({success: true, data: results.rows})
+            })
+        break;
+        default:
+            res.status(400).json({success: false, message: "No parameters where passed"})
+    }
 }
 
 module.exports = {
@@ -197,5 +232,6 @@ module.exports = {
     updateApplication,
     deleteApplicationById,
     updateApplicationColumnByID,
-    getApplicationsByCompanyName
+    getApplicationsByCompanyName,
+    getApplicationsBySpecificQuery
 }

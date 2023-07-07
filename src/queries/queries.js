@@ -77,6 +77,8 @@ const doesColumnExists =
 
  const getApplicationsByCompanyName = "SELECT * FROM application WHERE company_name = $1 ";
 
+ const ascendApplicationsByColumn = "SELECT * FROM application ORDER BY $1 ASC"
+
 module.exports = {
     getAllApplications,
     getApplicationById,
@@ -86,5 +88,6 @@ module.exports = {
     deleteApplicationById,
     updateApplicationColumnByID,
     doesColumnExists,
-    getApplicationsByCompanyName
+    getApplicationsByCompanyName,
+    ascendApplicationsByColumn
 }
