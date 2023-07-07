@@ -39,9 +39,8 @@ const addApplication = (req, res) => {
         (error, results) => {
         if (error) throw error;
 
-        const ApplicationExists = results.rows.length
-
-        if (ApplicationExists) return res.status(404).json({success: false, message: "This user already exists"})
+        const ApplicationExists = results.rows.length;
+        if (ApplicationExists) return res.status(404).json({success: false, message: "This user already exists"});
 
         //add application
         pool.query(queries.addApplication, 
@@ -63,7 +62,7 @@ const addApplication = (req, res) => {
                 body.final,
                 body.notes
             ],
-            (error, results) => {
+            (error) => {
                 if (error) throw error
 
                 res.status(201)
@@ -79,7 +78,7 @@ const addApplication = (req, res) => {
 }
 
 const updateApplication = (req, res) => {
-    const { id } = req.params
+    const { id } = req.params;
     const body = req.body;
 
     pool.query(queries.getApplicationById, [id], (error, results) => {
@@ -109,7 +108,7 @@ const updateApplication = (req, res) => {
                 body.notes,
                 id
             ],
-            (error, result) => {
+            (error) => {
                 if (error) throw error;
 
                 res.status(201)
@@ -134,7 +133,7 @@ const deleteApplicationById = (req, res) => {
 
         if (noApplicationExist) return res.status(404).json({success: false, message: "This user is not available"})
 
-        pool.query(queries.deleteApplicationById, [id], (error, results) => {
+        pool.query(queries.deleteApplicationById, [id], (error) => {
             if (error) throw error;
 
             res.status(200)
@@ -152,13 +151,11 @@ const updateApplicationColumnByID = (req, res) => {
     const { column, id } = req.params;
     const { updatedColumn } = req.body;
 
-
     //check to see if the id exits
     pool.query(queries.getApplicationById, [id], (error, results) => {
         if (error) throw error;
 
         const noApplicationExist = !results.rows.length
-
         if (noApplicationExist) return res.status(404).json({success: false, message: "This user is not available"});
 
         //check to see if the column exists
@@ -172,7 +169,7 @@ const updateApplicationColumnByID = (req, res) => {
             }
 
             // run update query
-            pool.query(queries.updateApplicationColumnByID(column), [updatedColumn, id], (error, results) => {
+            pool.query(queries.updateApplicationColumnByID(column), [updatedColumn, id], (error) => {
                 if (error) throw error;
 
                 return res.status(200).json({success: true, message: "Application column updated"})
@@ -182,31 +179,44 @@ const updateApplicationColumnByID = (req, res) => {
 }
 
 const getApplicationsByCompanyName = (req, res) => {
-    const { company_name, site } = req.query;
+    const { company_name } = req.query;
     pool.query(queries.getApplicationsByCompanyName, [company_name], (error, results) => {
         if (error) throw error;
         return res.status(200).json({success: true, data: results.rows})
     })
 }
 
-const determineQuery = (column, search) => {
+const determineQuery = (column, searchInput) => {
     const paramsToRun = []
-    if (search === "" || search === undefined) {
-        if (!column) throw new Error("No query parameter given")
+    if (searchInput === "" || searchInput === undefined) {
+        if (!column) return;
         paramsToRun.push(column);
     } else {
-        paramsToRun.push(search);
-        if (!column) throw new Error("No query parameter given here");
+        // what to do now, atp there is onthy the search input in the array
+        //
+        paramsToRun.push(searchInput);
+        if (!column) return;
         paramsToRun.push(column);
     }
     return paramsToRun;
 }   
 
 
-const getApplicationsBySpecificQuery = (req, res) => {
-    const { column, companyName } = req.query;
-    const queryToRun = determineQuery(column, companyName)
-   
+const searchByJobSiteAndDynamicColumn = (req, res) => {
+    const { column, site } = req.query;
+    const queryToRun = determineQuery(column, site)
+
+    if (queryToRun === undefined) {
+        res
+            .status(404)
+            .json(
+                {
+                    success: false,
+                    message: "There is a set search input query, but no dynamic column query provided"
+                }
+            );
+    }
+
     switch(queryToRun.length){
         case 1:
             pool.query('SELECT * FROM application ORDER BY ' + queryToRun[0] + ' ASC', (error, results) => {
@@ -215,7 +225,7 @@ const getApplicationsBySpecificQuery = (req, res) => {
             })
         break;
         case 2:
-            pool.query('SELECT * FROM application WHERE company_name = \'' + queryToRun[0] + '\' ORDER BY ' + queryToRun[1] + ' ASC', (error, results) => {
+            pool.query('SELECT * FROM application WHERE site = \'' + queryToRun[0] + '\' ORDER BY ' + queryToRun[1] + ' ASC', (error, results) => {
                 if (error) throw error;
                 res.status(200).json({success: true, data: results.rows})
             })
@@ -233,5 +243,5 @@ module.exports = {
     deleteApplicationById,
     updateApplicationColumnByID,
     getApplicationsByCompanyName,
-    getApplicationsBySpecificQuery
+    searchByJobSiteAndDynamicColumn
 }
