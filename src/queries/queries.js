@@ -75,7 +75,7 @@ const doesColumnExists =
 "SELECT EXISTS (SELECT 1 FROM information_schema.columns " +
  "WHERE table_name = 'application' AND column_name = $1) AS column_exists";
 
- const getApplicationsByCompanyName = "SELECT * FROM application WHERE company_name = $1 ";
+ const getApplicationsByCompanyName = "SELECT * FROM application WHERE company_name ILIKE '%' || $1 || '%'";
 
  const ascendApplicationsByColumn = "SELECT * FROM application ORDER BY $1 ASC"
 
