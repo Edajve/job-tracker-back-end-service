@@ -9,7 +9,7 @@ app.use(express.json())
 app.use(cors())
 
 app.use('/api/v1/applications', applicationRoutes)
-
+ 
 app.get('/', (req, res) => res.end('Root Endpoint hit'))
 app.get('*' ,(req, res) => res.end('This resource is not available'))
 

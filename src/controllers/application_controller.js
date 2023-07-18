@@ -17,7 +17,7 @@ const getAllApplications = (req, res) => {
 const getApplicationById = (req, res) => {
     const { id } = req.params;
 
-    pool.query(queries.getApplicationById, [id], (error, result) => {
+    pool.query(queries.getApplicationById, [id], (error, result) => { 
         if (error) throw error;
 
         res.status(200)
@@ -32,7 +32,7 @@ const getApplicationById = (req, res) => {
 
 const addApplication = (req, res) => {
     const body = req.body;
-
+ 
     pool.query(
         queries.getAppByCompanyNameAndPosition, 
         [body.company_name, body.position],
@@ -42,9 +42,9 @@ const addApplication = (req, res) => {
         const ApplicationExists = results.rows.length;
         if (ApplicationExists) return res.status(404).json({success: false, message: "This user already exists"});
 
-        //add application
+        //add application 
         pool.query(queries.addApplication, 
-            [
+            [ 
                 body.site,
                 body.date,
                 body.date_applied_to,
@@ -60,7 +60,7 @@ const addApplication = (req, res) => {
                 body.round_2,
                 body.round_3,
                 body.final,
-                body.notes
+                body.notes 
             ],
             (error) => {
                 if (error) throw error
@@ -180,6 +180,16 @@ const updateApplicationColumnByID = (req, res) => {
 
 const getApplicationsByCompanyName = (req, res) => {
     const { company_name } = req.query;
+    if (!company_name || company_name === '' ){
+        res
+        .status(404)
+        .json(
+            {
+                success: false,
+                message: "Can not find any applications with this name"
+            }
+        )
+    }
     pool.query(queries.getApplicationsByCompanyName, [company_name], (error, results) => {
         if (error) throw error;
         return res.status(200).json({success: true, data: results.rows})
